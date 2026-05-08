@@ -1,36 +1,43 @@
-import React from "react";
+import { auth } from "@/lib/auth/server";
 import Link from "next/link";
+import SignOutButton from "./auth/sign-out/page";
 
-const page = () => {
-  return (
-    <div className="min-h-screen bg-linear-to-br from-purple-50 to-indigo-100 flex items-center justify-center px-4">
-      <div className="max-w-2xl bg-white shadow-xl rounded-3xl p-10 text-center">
-        <h1 className="text-5xl font-bold text-gray-900 mb-6">
-          Inventory Management
+// Server components using auth methods must be rendered dynamically
+export const dynamic = "force-dynamic";
+
+export default async function Page() {
+  const { data: session } = await auth.getSession();
+
+  if (session?.user) {
+    return (
+      <div className="flex flex-col gap-4 min-h-screen items-center justify-center bg-gray-900">
+        <h1 className="mb-4 text-4xl">
+          Logged in as{" "}
+          <span className="font-bold underline">{session.user.name}</span>
         </h1>
 
-        <p className="text-lg text-gray-600 leading-relaxed mb-8">
-          Streamline your inventory tracking with our powerful, easy-to-use
-          management system. Track products, monitor stock levels, and gain
-          valuable insights.
-        </p>
+        <SignOutButton />
+      </div>
+    );
+  }
 
-        <div className="flex items-center justify-center gap-4">
-          <Link
-            href="/sign-in"
-            // style={{ backgroundColor: "#7c3aed" }}
-            className="inline-block bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition duration-200"
-          >
-            Sign In
-          </Link>
-
-          <button className="border border-gray-300 hover:border-gray-400 hover:bg-gray-100 text-gray-800 px-6 py-3 rounded-xl font-semibold transition duration-200">
-            Learn More
-          </button>
-        </div>
+  return (
+    <div className="flex flex-col gap-2 min-h-screen items-center justify-center bg-gray-900">
+      <h1 className="mb-4 text-4xl font-bold">Not logged in</h1>
+      <div className="flex item-center gap-2">
+        <Link
+          href="/auth/sign-up"
+          className="inline-flex text-lg text-indigo-400 hover:underline"
+        >
+          Sign-up
+        </Link>
+        <Link
+          href="/auth/sign-in"
+          className="inline-flex text-lg text-indigo-400 hover:underline"
+        >
+          Sign-in
+        </Link>
       </div>
     </div>
   );
-};
-
-export default page;
+}
